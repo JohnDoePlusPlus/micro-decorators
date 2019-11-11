@@ -1,5 +1,6 @@
 export interface Policy {
-  execution(type: 'success' | 'error'): this;
+  addExecution(type: 'success' | 'error'): this;
+  removeExecution(type: 'success' | 'error'): this;
   reset(): this;
   allowExecution(): boolean;
 }

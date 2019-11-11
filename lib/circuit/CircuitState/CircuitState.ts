@@ -3,9 +3,12 @@ import { Policy } from '../Policy/Policy';
 export class CircuitState {
 
   private state: 'open' | 'close' | 'half-open' = 'open';
+  private removeExecutionsTimers: number[] = [];
 
   constructor(
     private readonly timeout: number,
+    private readonly interval: number,
+    private readonly errorsFilter: (error: Error) => boolean,
     private readonly policy: Policy,
   ) { }
 
@@ -13,26 +16,58 @@ export class CircuitState {
     return this.state !== 'close';
   }
 
-  public success() {
+  public registerExecution(error?: Error): this {
+    const isError = error && this.errorsFilter(error);
+    const type = isError ? 'error' : 'success';
+
     if (this.state === 'half-open') {
-      this.state = 'open';
-      this.policy.reset();
+      isError ? this.close() : this.open();
     }
-    this.policy.execution('success');
+
+    this.policy.addExecution(type);
+    this.removeExecution(type);
+
+    if (!this.policy.allowExecution()) {
+      this.close();
+    }
 
     return this;
   }
 
-  public error() {
-    const allowExecution = this.policy.allowExecution();
-    if (!allowExecution || this.state === 'half-open') {
-      this.state = 'close';
-
-      setTimeout(() => this.state = 'half-open', this.timeout);
+  private removeExecution(type: 'success' | 'error'): void {
+    if (typeof this.interval !== 'number') {
+      return;
     }
-    this.policy.execution('error');
 
-    return this;
+    const timer = setTimeout(
+      () => {
+        this.policy.removeExecution(type);
+
+        if (this.state === 'close' && this.allowExecution()) {
+          this.state = 'half-open';
+        }
+        if (this.state === 'open' && !this.allowExecution()) {
+          this.state = 'close';
+        }
+      },
+      this.interval,
+    );
+
+    this.removeExecutionsTimers.push(timer as any);
+  }
+
+  private open() {
+    this.state = 'open';
+    this.policy.reset();
+
+    this.removeExecutionsTimers.forEach(timer => clearTimeout(timer as any));
+    this.removeExecutionsTimers = [];
+  }
+
+  private close() {
+    this.state = 'close';
+
+    setTimeout(() => this.state = 'half-open', this.timeout);
   }
 
 }

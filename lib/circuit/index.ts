@@ -1,5 +1,6 @@
-import { CircuitOptions } from './CircuitOptions';
-import { circuitFactory } from './factories/circuitFactory';
+import { raiseStrategy } from '../utils';
+import { CircuitOptions, DEFAULT_ON_ERROR, DEFAULT_OPTIONS } from './CircuitOptions';
+import { circuitStateStorageFactory } from './factories/circuitStateStorageFactory';
 
 export { CircuitOptions };
 
@@ -17,15 +18,33 @@ export { CircuitOptions };
 export function circuit(
   threshold: number,
   timeout: number,
-  options?: CircuitOptions,
+  options: CircuitOptions = DEFAULT_OPTIONS,
 ): MethodDecorator {
 
-  return function (_: any, __: any, descriptor: PropertyDescriptor) {
-    const method = descriptor.value;
-    const circuit = circuitFactory(method, threshold, timeout, options);
+  const circuitStateStorage = circuitStateStorageFactory(threshold, timeout, options);
+  const raise = raiseStrategy(options, DEFAULT_ON_ERROR);
 
-    descriptor.value = function (...args: any[]) {
-      return circuit.execute(args, this);
+  return function (_: any, propertyKey: any, descriptor: PropertyDescriptor) {
+    const method: (...args: any[]) => any = descriptor.value;
+
+    descriptor.value = async function (...args: any[]) {
+      const state = circuitStateStorage.get(args, this);
+      const allowExecution = state.allowExecution();
+
+      if (!allowExecution) {
+        throw raise(new Error(`@circuit: method ${propertyKey} is blocked.`));
+      }
+
+      try {
+        const result = await method.apply(this, ...args);
+
+        state.registerExecution();
+
+        return result;
+      } catch (error) {
+        state.registerExecution(error);
+        return raise(error);
+      }
     };
 
     return descriptor;

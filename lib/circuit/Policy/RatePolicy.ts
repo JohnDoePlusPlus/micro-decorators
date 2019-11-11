@@ -9,9 +9,16 @@ export class RatePolicy implements Policy {
     private readonly threshold: number,
   ) { }
 
-  public execution(type: 'success' | 'error'): this {
+  public addExecution(type: 'success' | 'error'): this {
     this.errors += type === 'error' ? 1 : 0;
     this.totalCalls += 1;
+
+    return this;
+  }
+
+  public removeExecution(type: 'success' | 'error'): this {
+    this.errors -= type === 'error' ? 1 : 0;
+    this.totalCalls -= 1;
 
     return this;
   }
