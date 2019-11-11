@@ -1,6 +1,4 @@
-import { Policy } from '../Policy/Policy';
-import { ErrorsPolicy } from '../Policy/ErrorsPolicy';
-import { RatePolicy } from '../Policy/RatePolicy';
+import { ErrorsPolicy, Policy, RatePolicy } from '../Policy';
 
 const factories: ReadonlyMap<'errors' | 'rate', (threshold: number) => Policy> =
   new Map<'errors' | 'rate', (threshold: number) => Policy>()

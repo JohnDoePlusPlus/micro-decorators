@@ -1,4 +1,4 @@
-import { Policy } from '../Policy/Policy';
+import { Policy } from '../Policy';
 
 export class CircuitState {
 

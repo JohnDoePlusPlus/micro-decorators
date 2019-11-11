@@ -1,6 +1,6 @@
 import { ClassType } from '../../interfaces/class';
-import { CircuitState } from '../CircuitState/CircuitState';
-import { CircuitStateStorage } from './CircuitStateStorage';
+import { CircuitState } from '../CircuitState';
+import { CircuitStateStorage } from '.';
 
 export class InstanceCircuit implements CircuitStateStorage {
 

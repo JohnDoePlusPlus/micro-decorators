@@ -1,5 +1,5 @@
-import { CircuitState } from '../CircuitState/CircuitState';
-import { CircuitStateStorage } from './CircuitStateStorage';
+import { CircuitState } from '../CircuitState';
+import { CircuitStateStorage } from '.';
 
 export class ClassCircuit implements CircuitStateStorage {
 
