@@ -16,7 +16,7 @@ export class CircuitState {
     return this.state !== 'close';
   }
 
-  public registerExecution(error?: Error): this {
+  public register(error?: Error): this {
     const isError = error && this.errorsFilter(error);
     const type = isError ? 'error' : 'success';
 

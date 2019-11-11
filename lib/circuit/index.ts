@@ -27,7 +27,7 @@ export function circuit(
   return function (_: any, propertyKey: any, descriptor: PropertyDescriptor) {
     const method: (...args: any[]) => any = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = function (...args: any[]) {
       const state = circuitStateStorage.get(args, this);
       const allowExecution = state.allowExecution();
 
@@ -35,15 +35,28 @@ export function circuit(
         throw raise(new Error(`@circuit: method ${propertyKey} is blocked.`));
       }
 
-      try {
-        const result = await method.apply(this, ...args);
+      function success(x: any) {
+        state.register();
 
-        state.registerExecution();
+        return x;
+      }
 
-        return result;
-      } catch (error) {
-        state.registerExecution(error);
+      function error(error: Error) {
+        state.register(error);
+
         return raise(error);
+      }
+
+      try {
+        const result = method.apply(this, args);
+
+        if (result && result.then) {
+          return result.then(success).catch(error);
+        }
+
+        return success(result);
+      } catch (error) {
+        return error(error);
       }
     };
 
