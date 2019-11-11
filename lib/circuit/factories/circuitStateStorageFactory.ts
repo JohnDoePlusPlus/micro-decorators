@@ -13,7 +13,7 @@ const factories: ReadonlyMap<'args-hash' | 'class' | 'instance', CircuitFactory>
   new Map<'args-hash' | 'class' | 'instance', CircuitFactory>()
     .set('args-hash', circuitState => new ArgumentsCircuit(circuitState))
     .set('instance', circuitState => new InstanceCircuit(circuitState))
-    .set('class', circuitState => new ClassCircuit(circuitState()));
+    .set('class', circuitState => new ClassCircuit(circuitState));
 
 export function circuitStateStorageFactory(
   threshold: number,
@@ -23,7 +23,7 @@ export function circuitStateStorageFactory(
 
   const scope = options.scope || DEFAULT_SCOPE;
 
-  const circuitState = () => circuitStateFactory(threshold, timeout, options);
+  const circuitStateFunction = () => circuitStateFactory(threshold, timeout, options);
 
   const factory = factories.get(scope);
 
@@ -31,5 +31,5 @@ export function circuitStateStorageFactory(
     throw new Error(`@circuit unsuported scope option: ${scope}`);
   }
 
-  return factory(circuitState);
+  return factory(circuitStateFunction);
 }

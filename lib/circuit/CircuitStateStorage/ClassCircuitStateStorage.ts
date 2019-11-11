@@ -3,9 +3,11 @@ import { CircuitStateStorage } from './CircuitStateStorage';
 
 export class ClassCircuit implements CircuitStateStorage {
 
-  constructor(
-    private readonly circuitState: CircuitState,
-  ) { }
+  private readonly circuitState: CircuitState;
+
+  constructor(circuitStateFunction: () => CircuitState) {
+    this.circuitState = circuitStateFunction();
+  }
 
   public get(): CircuitState {
     return this.circuitState;

@@ -43,10 +43,7 @@ export class CircuitState {
       () => {
         this.policy.removeExecution(type);
 
-        if (this.state === 'close' && this.allowExecution()) {
-          this.state = 'half-open';
-        }
-        if (this.state === 'open' && !this.allowExecution()) {
+        if (this.state === 'open' && !this.policy.allowExecution()) {
           this.state = 'close';
         }
       },

@@ -4,8 +4,8 @@ class Service {
 
   private executionIndex = 0;
 
-  @circuit(3, 1000)
-  async get() {
+  @circuit(2, 1000)
+  public async get() {
     if (this.executionIndex < 3) {
       this.executionIndex += 1;
       throw new Error('Something went worng');
@@ -20,22 +20,22 @@ async function main() {
   const service = new Service();
 
   try {
-    await service.get();
+    console.log(await service.get());
   } catch (error) {
     console.log(error); // function throws error
   }
   try {
-    await service.get();
+    console.log(await service.get());
   } catch (error) {
     console.log(error); // function throws error
   }
   try {
-    await service.get();
+    console.log(await service.get());
   } catch (error) {
     console.log(error); // function throws error
   }
   try {
-    await service.get();
+    console.log(await service.get());
   } catch (error) {
     console.log(error); // decorator throws error
   }
