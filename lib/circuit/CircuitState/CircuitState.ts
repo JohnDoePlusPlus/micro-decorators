@@ -1,4 +1,4 @@
-import { Policy } from '../Policy';
+import { Policy } from '../Policy/Policy';
 
 export class CircuitState {
 
@@ -44,7 +44,7 @@ export class CircuitState {
         this.policy.removeExecution(type);
 
         if (this.state === 'open' && !this.policy.allowExecution()) {
-          this.state = 'close';
+          this.close();
         }
       },
       this.interval,

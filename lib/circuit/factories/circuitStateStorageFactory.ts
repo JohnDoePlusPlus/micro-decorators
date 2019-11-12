@@ -1,12 +1,10 @@
-import { circuitStateFactory } from '.';
 import { CircuitOptions, DEFAULT_SCOPE } from '../CircuitOptions';
-import { CircuitState } from '../CircuitState';
-import {
-  ArgumentsCircuit,
-  CircuitStateStorage,
-  ClassCircuit,
-  InstanceCircuit,
-} from '../CircuitStateStorage';
+import { CircuitState } from '../CircuitState/CircuitState';
+import { ArgumentsCircuit } from '../CircuitStateStorage/ArgumentsCircuitStateStorage';
+import { CircuitStateStorage } from '../CircuitStateStorage/CircuitStateStorage';
+import { ClassCircuit } from '../CircuitStateStorage/ClassCircuitStateStorage';
+import { InstanceCircuit } from '../CircuitStateStorage/InstanceCircuitStateStorage';
+import { circuitStateFactory } from './circuitStateFactory';
 
 type CircuitFactory = (circuitState: () => CircuitState) => CircuitStateStorage;
 

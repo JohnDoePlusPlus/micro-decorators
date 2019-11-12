@@ -5,10 +5,10 @@ class Service {
   private executionIndex = 0;
 
   @circuit(2, 1000)
-  public async get() {
-    if (this.executionIndex < 3) {
+  public get() {
+    if (this.executionIndex < 2) {
       this.executionIndex += 1;
-      throw new Error('Something went worng');
+      throw new Error('Something went wrong');
     }
 
     return 42;
@@ -20,31 +20,26 @@ async function main() {
   const service = new Service();
 
   try {
-    console.log(await service.get());
+    service.get();
   } catch (error) {
-    console.log(error); // function throws error
+    console.log(error.message); // function throws error
   }
   try {
-    console.log(await service.get());
+    service.get();
   } catch (error) {
-    console.log(error); // function throws error
+    console.log(error.message); // function throws error
   }
   try {
-    console.log(await service.get());
+    service.get();
   } catch (error) {
-    console.log(error); // function throws error
-  }
-  try {
-    console.log(await service.get());
-  } catch (error) {
-    console.log(error); // decorator throws error
+    console.log(error.message); // decorator throws error
   }
 
   await new Promise(resolve => setTimeout(
     () => resolve(),
     1000,
   ));
-  console.log(await service.get()); // prints: 42
+  console.log(service.get()); // prints: 42
 }
 
 main();

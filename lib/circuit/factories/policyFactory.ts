@@ -1,4 +1,6 @@
-import { ErrorsPolicy, Policy, RatePolicy } from '../Policy';
+import { ErrorsPolicy } from '../Policy/ErrorsPolicy';
+import { Policy } from '../Policy/Policy';
+import { RatePolicy } from '../Policy/RatePolicy';
 
 const factories: ReadonlyMap<'errors' | 'rate', (threshold: number) => Policy> =
   new Map<'errors' | 'rate', (threshold: number) => Policy>()
@@ -9,7 +11,7 @@ export function policyFactory(threshold: number, type: 'errors' | 'rate'): Polic
   const factory = factories.get(type);
 
   if (!factory) {
-    throw new Error(`@circuit: unsuported factory type: ${type}`);
+    throw new Error(`@circuit unsuported policy type: ${type}`);
   }
 
   return factory(threshold);

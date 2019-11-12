@@ -1,7 +1,7 @@
 import * as hash from 'object-hash';
 
-import { CircuitState } from '../CircuitState';
-import { CircuitStateStorage } from '.';
+import { CircuitState } from '../CircuitState/CircuitState';
+import { CircuitStateStorage } from './CircuitStateStorage';
 
 export class ArgumentsCircuit implements CircuitStateStorage {
 

@@ -30,11 +30,11 @@ export class RatePolicy implements Policy {
   }
 
   public allowExecution(): boolean {
-    return this.rate() > this.threshold;
+    return this.rate() < this.threshold;
   }
 
   private rate(): number {
-    return this.errors / this.totalCalls;
+    return this.totalCalls === 0 ? 0 : this.errors / this.totalCalls;
   }
 
 }

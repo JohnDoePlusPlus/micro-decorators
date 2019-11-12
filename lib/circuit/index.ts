@@ -1,6 +1,7 @@
 import { raiseStrategy } from '../utils';
 import { CircuitOptions, DEFAULT_ON_ERROR, DEFAULT_OPTIONS } from './CircuitOptions';
 import { circuitStateStorageFactory } from './factories/circuitStateStorageFactory';
+import { isPromise } from '../utils/isPromiseLike';
 
 export { CircuitOptions };
 
@@ -27,24 +28,38 @@ export function circuit(
   return function (_: any, propertyKey: any, descriptor: PropertyDescriptor) {
     const method: (...args: any[]) => any = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = function (...args: any[]) {
       const state = circuitStateStorage.get(args, this);
       const allowExecution = state.allowExecution();
 
       if (!allowExecution) {
-        throw raise(new Error(`@circuit: method ${propertyKey} is blocked.`));
+        return raise(new Error(`@circuit: method ${propertyKey} is blocked.`));
       }
 
-      try {
-        const result = await method.apply(this, args);
-
+      function successRegister<T = any>(data: T) {
         state.register();
 
-        return result;
-      } catch (error) {
+        return data;
+      }
+
+      function errorRegister(error: Error) {
         state.register(error);
 
         return raise(error);
+      }
+
+      try {
+        const result = method.apply(this, args);
+
+        if (isPromise(result)) {
+          return result
+            .then(data => successRegister(data))
+            .catch(error => errorRegister(error) as any);
+        }
+
+        return successRegister(result);
+      } catch (error) {
+        return errorRegister(error);
       }
     };
 

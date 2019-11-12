@@ -27,7 +27,7 @@ export class ErrorsPolicy implements Policy {
   }
 
   public allowExecution(): boolean {
-    return this.errors <= this.threshold;
+    return this.errors < this.threshold;
   }
 
 }

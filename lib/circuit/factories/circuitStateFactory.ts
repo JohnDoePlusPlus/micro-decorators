@@ -1,11 +1,11 @@
-import { policyFactory } from '.';
 import {
   CircuitOptions,
   DEFAULT_ERROR_FILTER,
   DEFAULT_INTERVAL,
   DEFAULT_POLICY,
 } from '../CircuitOptions';
-import { CircuitState } from '../CircuitState';
+import { CircuitState } from '../CircuitState/CircuitState';
+import { policyFactory } from './policyFactory';
 
 export function circuitStateFactory(
   threshold: number,
